@@ -165,15 +165,16 @@ export const useTableStore = defineStore('tableStore', () => {
     await preNextMove();
   }
 
-  const startGame = (m: number, n: number, x: Player, o: Player, lengthToWin: number) => {
+  const startGame = async (m: number, n: number, x: Player, o: Player, lengthToWin: number) => {
     meta.value = {
       m, n, lengthToWin
     }
-    
+
     generateEmptyTable(m, n)
     xPlayer.value = x
     oPlayer.value = o
 
+    await preNextMove()
   }
 
   return { table, meta, generateEmptyTable, resetTable, isWin, checkWin, makeMove, isGameEnd, curentMove, startGame }

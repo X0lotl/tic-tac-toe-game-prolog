@@ -23,7 +23,7 @@ const router = useRouter();
         GAME END
       </div>
       <div class="mt-3 text-center">
-        {{ tableStore.winner === 'X' ? 'Player X wins' : tableStore.winner === 'O' ? 'Player O wins' : 'Draw' }}
+        {{ tableStore.isWin === 'X' ? 'Player X wins' : tableStore.isWin === 'O' ? 'Player O wins' : 'Draw' }}
       </div>
     </Dialog>
   </div>
