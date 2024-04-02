@@ -4,6 +4,7 @@ import { useTableStore } from '../store/table.store';
 const tableStore = useTableStore()
 
 const { makeMove, curentMove } = tableStore;
+
 </script>
 
 <template>

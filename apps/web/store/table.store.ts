@@ -2,6 +2,8 @@ import { Move, Player } from "~/models/player.model";
 import type { Cell, Table } from "~/models/table.model";
 
 export const useTableStore = defineStore('tableStore', () => {
+  const engineBaseUrl = import.meta.env.NUXT_PUBLIC_ENGINE_BASE_URL;
+
   const table = ref<Table>([])
 
   const isWin = ref("E")
@@ -32,8 +34,26 @@ export const useTableStore = defineStore('tableStore', () => {
     preNextMove();
   }
 
-  const checkWin = () => {
-    isWin.value = "E"
+  const checkWin = async () => {
+    const response = await fetch(`http://localhost:8888/is_win`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        table: table.value.join(""),
+        m: meta.value.m,
+        n: meta.value.n,
+        lengthToWin: meta.value.lengthToWin
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.winner !== "E") {
+      isWin.value = data.winner
+      isGameEnd.value = true
+    }
   }
 
   const changeCurrentMove = () => {
@@ -54,42 +74,55 @@ export const useTableStore = defineStore('tableStore', () => {
     return
   }
 
-  const preNextMove = () => {
+  const preNextMove = async () => {
     if (curentMove.value === Move.O) {
       if (oPlayer.value === Player.Computer) {
-        makeComputerMove();
+        await makeComputerMove();
       }
     }
 
     if (curentMove.value === Move.X) {
       if (xPlayer.value === Player.Computer) {
-        makeComputerMove();
+        await makeComputerMove();
       }
     }
     
     checkIfBoardIsFull();
-    checkWin();
+    await checkWin();
 
   }
 
-  const makeComputerMove = () => {
-    let savedTable = table.value
+  const makeComputerMove = async () => {
+    console.log("Computer move");
+    await checkWin();
 
-    checkWin();
-
-    for (let i = 0; i < table.value.length; i++) {
-      if (table.value[i] === "E") {
-        savedTable[i] = curentMove.value
-        break
-      }
+    if (isGameEnd.value) {
+      return
     }
 
+    const response = await fetch(`http://localhost:8888/make_move`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        table: table.value.join(""),
+        m: meta.value.m,
+        n: meta.value.n,
+        lengthToWin: meta.value.lengthToWin,
+        player: curentMove.value
+      })
+    })
+
+    const data = await response.json()
+
+    table.value = data.bestMove.split("")
+
     changeCurrentMove()
-    savedTable = table.value
-    preNextMove()
+    await preNextMove()
   }
 
-  const makeMove = (index: number) => {
+  const makeMove = async (index: number) => {
     checkIfBoardIsFull();
     checkWin();
 
@@ -113,29 +146,31 @@ export const useTableStore = defineStore('tableStore', () => {
 
     changeCurrentMove();
     checkIfBoardIsFull();
-    checkWin();
+    await checkWin();
 
     if(isGameEnd.value) {
       return
     }
 
-    preNextMove();
+    await preNextMove();
   }
 
-  const resetTable = () => {
+  const resetTable =  async () => {
     table.value = table.value.map(() => "E")
 
     isWin.value = "E"
     isGameEnd.value = false
     curentMove.value = Move.X
 
-    preNextMove();
+    await preNextMove();
   }
 
   const startGame = (m: number, n: number, x: Player, o: Player, lengthToWin: number) => {
     generateEmptyTable(m, n)
     xPlayer.value = x
     oPlayer.value = o
+
+    console.log(xPlayer.value, oPlayer.value)
 
     meta.value = {
       m, n, lengthToWin
