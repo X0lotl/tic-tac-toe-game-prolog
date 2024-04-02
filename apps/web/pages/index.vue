@@ -77,10 +77,10 @@ const onStartButtonClick = () => {
       </div>
       <div class="grid grid-cols-1 gap-3">
         <FloatLabel>
-          <InputNumber id="rows" v-model="difficulty" label="Rows" :min="1" :max="5" class="w-full" />
+          <InputNumber id="rows" v-model="difficulty" label="Rows" :min="1" :max="1000" class="w-full" />
           <label for="rows">Difficulty</label>
         </FloatLabel>
-        <Slider v-model="difficulty" :min="1" :max="5" />
+        <Slider v-model="difficulty" :min="1" :max="1000" />
       </div>
       <div>
         <Button @click="onStartButtonClick()" class="w-full" severity="success" label="Start Game" />
