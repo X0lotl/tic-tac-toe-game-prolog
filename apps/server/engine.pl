@@ -52,8 +52,10 @@ current_player(max, 'O', 'O').
 
 
 % best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, +MaxDepth, -BestMove, -BestValue)
-best_move(max, [], _, _, _, _, _, [], -2).
-best_move(min, [], _, _, _, _, _, [], 2).
+% best_move(max, [], _, _, _, _, _, [], -2).
+% best_move(min, [], _, _, _, _, _, [], 2).
+best_move(max, [], _, _, _, _, _, [], 0).
+best_move(min, [], _, _, _, _, _, [], 0).
 
 best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, MaxDepth, BestMove, BestValue) :-
   eval_board(Move, M, N, Player, WinLength, Value),
