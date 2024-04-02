@@ -166,15 +166,14 @@ export const useTableStore = defineStore('tableStore', () => {
   }
 
   const startGame = (m: number, n: number, x: Player, o: Player, lengthToWin: number) => {
+    meta.value = {
+      m, n, lengthToWin
+    }
+    
     generateEmptyTable(m, n)
     xPlayer.value = x
     oPlayer.value = o
 
-    console.log(xPlayer.value, oPlayer.value)
-
-    meta.value = {
-      m, n, lengthToWin
-    }
   }
 
   return { table, meta, generateEmptyTable, resetTable, isWin, checkWin, makeMove, isGameEnd, curentMove, startGame }
