@@ -57,8 +57,8 @@ current_player(max, 'O', 'O').
 
 % best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, -BestMove, -BestValue)
 % Chooses the next move.
-best_move(max, [], _, _, _, _, [], 0).
-best_move(min, [], _, _, _, _, [], 0).
+best_move(max, [], _, _, _, _, [], -2).
+best_move(min, [], _, _, _, _, [], 2).
 
 best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestValue) :-
   eval_board(Move, M, N, Player, WinLength, Value),
