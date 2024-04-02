@@ -11,6 +11,8 @@
 :- http_handler(root(make_move), handle_make_move, []).		
 :- http_handler(root(is_win), handle_is_win, []).		
 
+:- set_setting(http:cors, [*]).
+
 server(Port) :-
   http_server(http_dispatch, [port(Port)]).
 
@@ -18,7 +20,11 @@ destruct_make_move_dict(_{table: Board, m: M, n: N, player: PlayerRaw, winLength
   atom_string(Player, PlayerRaw), !.
 
 handle_make_move(Request) :-
-  cors_enable,
+  option(method(options), Request), !,
+  cors_enable(Request, [methods([post])]),
+  format('~n').                      
+
+handle_make_move(Request) :-
   http_read_json_dict(Request, Input),
   destruct_make_move_dict(Input, Board, M, N, Player, WinLength),
   string_chars(Board, DestructedBoard),
@@ -27,6 +33,7 @@ handle_make_move(Request) :-
   Res = _{
     bestMove: SerializedBestMove
   },
+  cors_enable(Request, [methods([post])]),
   reply_json_dict(Res).
 
 destruct_is_win_dict(_{table: Board, m: M, n: N, winLength: WinLength}, Board, M, N, WinLength).
@@ -40,7 +47,11 @@ get_winner(Board, M, N, WinLength, 'O') :-
 get_winner(_, _, _, _, 'E').
 
 handle_is_win(Request) :-
-  cors_enable,
+  option(method(options), Request), !,
+  cors_enable(Request, [methods([post])]),
+  format('~n').                      
+
+handle_is_win(Request) :-
   http_read_json_dict(Request, Input),
   destruct_is_win_dict(Input, Board, M, N, WinLength),
   string_chars(Board, DestructedBoard),
@@ -48,5 +59,6 @@ handle_is_win(Request) :-
   Res = _{
     winner: Winner
   },
+  cors_enable(Request, [methods([post])]),
   reply_json_dict(Res).
   
