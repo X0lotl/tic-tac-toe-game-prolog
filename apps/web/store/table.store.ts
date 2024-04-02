@@ -13,7 +13,8 @@ export const useTableStore = defineStore('tableStore', () => {
   const meta = ref({
     m: 0,
     n: 0,
-    lengthToWin: 0
+    lengthToWin: 0,
+    difficulty: 1
   })
 
   const xPlayer = ref(Player.Player)
@@ -56,7 +57,7 @@ export const useTableStore = defineStore('tableStore', () => {
         table: table.value.join(""),
         m: meta.value.m,
         n: meta.value.n,
-        winLength: meta.value.lengthToWin
+        winLength: meta.value.lengthToWin,
       })
     })
 
@@ -113,7 +114,8 @@ export const useTableStore = defineStore('tableStore', () => {
         m: meta.value.m,
         n: meta.value.n,
         winLength: meta.value.lengthToWin,
-        player: curentMove.value
+        player: curentMove.value,
+        difficulty: meta.value.difficulty
       })
     })
 
@@ -168,9 +170,9 @@ export const useTableStore = defineStore('tableStore', () => {
     await preNextMove();
   }
 
-  const startGame = async (m: number, n: number, x: Player, o: Player, lengthToWin: number) => {
+  const startGame = async (m: number, n: number, x: Player, o: Player, lengthToWin: number, difficulty: number) => {
     meta.value = {
-      m, n, lengthToWin
+      m, n, lengthToWin, difficulty
     }
 
     generateEmptyTable(m, n)

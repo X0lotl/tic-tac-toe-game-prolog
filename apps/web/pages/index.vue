@@ -18,6 +18,8 @@ const n = ref(3);
 
 const lengthToWin = ref(3);
 
+const difficulty = ref(1);
+
 const tableStore = useTableStore();
 
 const onStartButtonClick = () => {
@@ -25,11 +27,11 @@ const onStartButtonClick = () => {
     const xPlayer = playerPlays.value === 'X' ? Player.Player : Player.Computer;
     const oPlayer = playerPlays.value === 'O' ? Player.Player : Player.Computer; 
     
-    tableStore.startGame(m.value, n.value, xPlayer, oPlayer, lengthToWin.value);
+    tableStore.startGame(m.value, n.value, xPlayer, oPlayer, lengthToWin.value, difficulty.value);
 
     router.push('/game');
   } else if (selectedMode.value === 'duo') {
-    tableStore.startGame(m.value, n.value, Player.Player, Player.Player,  lengthToWin.value);
+    tableStore.startGame(m.value, n.value, Player.Player, Player.Player,  lengthToWin.value, difficulty.value);
 
     router.push('/game');
   }
@@ -68,10 +70,17 @@ const onStartButtonClick = () => {
       </div>
       <div class="grid grid-cols-1 gap-3">
         <FloatLabel>
-          <InputNumber id="rows" v-model="lengthToWin" label="Rows" :min="3" :max="20" class="w-full" />
+          <InputNumber id="rows" v-model="lengthToWin" label="Rows" :min="3" :max="Math.min(m,n)" class="w-full" />
           <label for="rows">Length to win</label>
         </FloatLabel>
         <Slider v-model="lengthToWin" :min="3" :max="Math.min(m,n)" />
+      </div>
+      <div class="grid grid-cols-1 gap-3">
+        <FloatLabel>
+          <InputNumber id="rows" v-model="difficulty" label="Rows" :min="1" :max="5" class="w-full" />
+          <label for="rows">Difficulty</label>
+        </FloatLabel>
+        <Slider v-model="difficulty" :min="1" :max="5" />
       </div>
       <div>
         <Button @click="onStartButtonClick()" class="w-full" severity="success" label="Start Game" />
