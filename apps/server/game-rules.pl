@@ -52,7 +52,7 @@ is_winning_column_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
 
 is_winning_column_recursive_helper(Player, N, M, Skip, Board, WinLength) :-
   NextSkip is Skip + 1,
-  MaxSkip is (M - WinLength) * N,
+  MaxSkip is ((M - WinLength) + 1) * N,
   NextSkip =< MaxSkip,
   is_winning_column_recursive_helper(Player, N, M, NextSkip, Board, WinLength), 
   !.
