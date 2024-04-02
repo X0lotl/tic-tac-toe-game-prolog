@@ -109,7 +109,7 @@ export const useTableStore = defineStore('tableStore', () => {
         table: table.value.join(""),
         m: meta.value.m,
         n: meta.value.n,
-        lengthToWin: meta.value.lengthToWin,
+        winLength: meta.value.lengthToWin,
         player: curentMove.value
       })
     })
