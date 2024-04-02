@@ -1,24 +1,21 @@
 :- consult('./game-rules.pl').
 
 % possible_move(+Player, +Board -PossibleMove)
-% The first n will be replaced with PlayerColor -> possible move.
-% possible_move(_, [], []).
 possible_move(Player, ['E'|T], [Player|T]).
 possible_move(Player, [H|T], [H|PossibleMove]) :-
   possible_move(Player, T, PossibleMove).
 
+
+% opposite_side(+Side, -OppositeSide)
 opposite_side('X', 'O').
 opposite_side('O', 'X').
 
-% all_possible_moves(+PlayerColor, +Board, -AllMoves)
-% AllMoves will be matched with all possible moves for the current
-% Board.
+% all_possible_moves(+Player, +Board, -AllMoves)
 all_possible_moves(Player, Board, AllMoves) :-
   findall(Move, possible_move(Player, Board, Move), AllMoves),
   !.
 
 % eval_board(+Board, +M, +N, +Player, +WinLength, -Value)
-% Evaluates the score of the Board.
 eval_board([], _, _, _, _, 0).
 eval_board(Board, M, N, Player, WinLength, Value) :-
   is_winning(Player, N, M, Board, WinLength),
@@ -33,13 +30,11 @@ eval_board(Board, Value) :-
   \+ has_next_move(Board),
   Value is 0.
 
-% change_max_min(+MinOrMax, TheOther)
-% Changes the MinMax atom.
+% change_max_min(+MinMax, TheOther)
 change_max_min(max, min).
 change_max_min(min, max).
 
 % compare_moves(+MinMax, +MoveA, +ValueA, +MoveB, +ValueB, -BetterMove, -BetterValue)
-% Chooses the move with the higher value.
 compare_moves(max, MoveA, ValueA, _, ValueB, MoveA, ValueA) :-
 	ValueA >= ValueB.
 compare_moves(max, _, ValueA, MoveB, ValueB, MoveB, ValueB) :-
@@ -49,6 +44,7 @@ compare_moves(min, MoveA, ValueA, _, ValueB, MoveA, ValueA) :-
 compare_moves(min, _, ValueA, MoveB, ValueB, MoveB, ValueB) :-
 	ValueA > ValueB.
 
+% current_player(+MinMax, +Player, -CurrentPlayer)
 current_player(min, 'X', 'O').
 current_player(max, 'X', 'X').
 current_player(min, 'O', 'X').
@@ -56,7 +52,6 @@ current_player(max, 'O', 'O').
 
 
 % best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, +MaxDepth, -BestMove, -BestValue)
-% Chooses the next move.
 best_move(max, [], _, _, _, _, _, [], -2).
 best_move(min, [], _, _, _, _, _, [], 2).
 
@@ -71,11 +66,9 @@ best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, MaxDepth, BestMov
 	minimax_step(Other, Move, M, N, Player, WinLength, MaxDepth, _, BottomBestV),
 	compare_moves(MinMax, Move, BottomBestV, CurrentBestM, CurrentBestV, BestMove, BestValue).
 
+% minimax_step(+MinMax, +Board, +M, +N, +Player, +WinLength, +MaxDepth, -BestMove, -BestValue)
 minimax_step(MinMax, _, M, N, Player, WinLength, 0, BestMove, BestValue) :-
   best_move(MinMax, [], M, N, Player, WinLength, 0, BestMove, BestValue).
-  % current_player(MinMax, Player, CurrentPlayer),
-  % all_possible_moves(CurrentPlayer, Board, AllMoves),
-  % best_move(MinMax, AllMoves, M, N, Player, WinLength, BestMove, BestValue), !.
 
 minimax_step(MinMax, Board, M, N, Player, WinLength, MaxDepth, BestMove, BestValue) :-
   current_player(MinMax, Player, CurrentPlayer),
@@ -83,5 +76,6 @@ minimax_step(MinMax, Board, M, N, Player, WinLength, MaxDepth, BestMove, BestVal
   NextMaxDepth is MaxDepth - 1,
   best_move(MinMax, AllMoves, M, N, Player, WinLength, NextMaxDepth, BestMove, BestValue), !.
 
+% minimax(+Board, +M, +N, +Player, +WinLength, +MaxDepth, -BestMove)
 minimax(Board, M, N, Player, WinLength, MaxDepth, BestMove) :-
   minimax_step(max, Board, M, N, Player, WinLength, MaxDepth, BestMove, _).

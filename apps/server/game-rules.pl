@@ -1,13 +1,8 @@
-create_board(N, M, Board) :-
-  N > 0,
-  M > 0,
-  Length is N * M,
-  length(Board, Length),
-  !.
-
+% has_next_move(?Board)
 has_next_move(Board) :-
   append(_, ['E'|_], Board), !.
 
+% create_list_n(+Element, +N, -List)
 create_list_n(_, 0, []).
 create_list_n(Element, N, List) :-
   NextN is N - 1,
@@ -15,6 +10,7 @@ create_list_n(Element, N, List) :-
   append(NextList, [Element], List), 
   !.
 
+% add_columns_separator(+Board, +CurrentN, +N, -BoardWithSeparators)
 add_columns_separator([], _, _, []).
 add_columns_separator([BoardHead|BoardTail], CurrentN, N, BoardWithSeparators) :-
   CurrentN is N - 1,
@@ -28,6 +24,7 @@ add_columns_separator([BoardHead|BoardTail], CurrentN, N, BoardWithSeparators) :
   append([BoardHead], NextBoardWithSeparators, BoardWithSeparators), 
   !.
 
+% is_winning_line(+Player, +N, +Board, +WinLength)
 is_winning_line(Player, N, Board, WinLength) :-
   WinLength =< N,
   add_columns_separator(Board, 0, N, BoardWithSeparators),
@@ -36,6 +33,7 @@ is_winning_line(Player, N, Board, WinLength) :-
   append(RepeatedList, _, T),
   !.
 
+% is_winning_column_starting_at(+Player, +N, +Board, +WinLength)
 is_winning_column_starting_at(_, _, _, _, 0).
 is_winning_column_starting_at(Player, N, 0, [Player|RestBoard], WinLength) :-
   NextWinLength is WinLength - 1,
@@ -47,6 +45,7 @@ is_winning_column_starting_at(Player, N, Skip, [_|Rest], WinLength) :-
   NextSkip is Skip - 1,
   is_winning_column_starting_at(Player, N, NextSkip, Rest, WinLength), !.
 
+% is_winning_column_recursive_helper(+Player, +N, +Skip, +Board, +WinLength)
 is_winning_column_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
   is_winning_column_starting_at(Player, N, Skip, Board, WinLength), !.
 
@@ -57,9 +56,11 @@ is_winning_column_recursive_helper(Player, N, M, Skip, Board, WinLength) :-
   is_winning_column_recursive_helper(Player, N, M, NextSkip, Board, WinLength), 
   !.
 
+% is_winning_column(+Player, +N, +M, +Board, +WinLength)
 is_winning_column(Player, N, M, Board, WinLength) :-
   is_winning_column_recursive_helper(Player, N, M, 0, Board, WinLength).
 
+% next_x(+N, +X, -NextX)
 next_x(N, X, NextX) :-
   N is X + 1,
   NextX = 0, 
@@ -69,6 +70,7 @@ next_x(_, X, NextX) :-
   NextX is X + 1, 
   !.
 
+% is_winning_primary_diagonal_starting_at(+Player, +N, +X, +Board, +WinLength)
 is_winning_primary_diagonal_starting_at(_, _, _, _, _, 0).
 is_winning_primary_diagonal_starting_at(Player, _, _, 0, [Player|_], 1).
 
@@ -86,6 +88,7 @@ is_winning_primary_diagonal_starting_at(Player, N, X, Skip, [_|Rest], WinLength)
   next_x(N, X, NextX),
   is_winning_primary_diagonal_starting_at(Player, N, NextX, NextSkip, Rest, WinLength), !.
 
+% is_winning_primary_diagonal_recursive_helper(+Player, +N, +M, +Skip, +Board, +WinLength)
 is_winning_primary_diagonal_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
   is_winning_primary_diagonal_starting_at(Player, N, 0, Skip, Board, WinLength), !.
 
@@ -96,9 +99,11 @@ is_winning_primary_diagonal_recursive_helper(Player, N, M, Skip, Board, WinLengt
   is_winning_primary_diagonal_recursive_helper(Player, N, M, NextSkip, Board, WinLength), 
   !.
 
+% is_winning_primary_diagonal(+Player, +N, +M, +Board, +WinLength)
 is_winning_primary_diagonal(Player, N, M, Board, WinLength) :-
   is_winning_primary_diagonal_recursive_helper(Player, N, M, 0, Board, WinLength).
 
+% is_winning_secondary_diagonal_starting_at(+Player, +N, +X, +Board, +WinLength)
 is_winning_secondary_diagonal_starting_at(_, _, _, _, _, 0).
 is_winning_secondary_diagonal_starting_at(Player, _, _, 0, [Player|_], 1).
 
@@ -117,6 +122,7 @@ is_winning_secondary_diagonal_starting_at(Player, N, X, Skip, [_|Rest], WinLengt
   is_winning_secondary_diagonal_starting_at(Player, N, NextX, NextSkip, Rest, WinLength), 
   !.
 
+% is_winning_secondary_diagonal_recursive_helper(+Player, +N, +M, +Skip, +Board, +WinLength)
 is_winning_secondary_diagonal_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
   is_winning_secondary_diagonal_starting_at(Player, N, 0, Skip, Board, WinLength), 
   !.
@@ -128,10 +134,11 @@ is_winning_secondary_diagonal_recursive_helper(Player, N, M, Skip, Board, WinLen
   is_winning_secondary_diagonal_recursive_helper(Player, N, M, NextSkip, Board, WinLength), 
   !.
 
+% is_winning_secondary_diagonal(+Player, +N, +M, +Board, +WinLength)
 is_winning_secondary_diagonal(Player, N, M, Board, WinLength) :-
   is_winning_secondary_diagonal_recursive_helper(Player, N, M, 0, Board, WinLength).
 
-% is_winning(Player, N, M, Board, WinLength)
+% is_winning(+Player, +N, +M, +Board, +WinLength)
 is_winning(Player, N, _, Board, WinLength) :-
   is_winning_line(Player, N, Board, WinLength), 
   !.
