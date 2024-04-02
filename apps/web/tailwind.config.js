@@ -5,4 +5,7 @@ export default {
     },
   },
   plugins: [],
+  corePlugins: {
+    preflight: false,
+  },
 }
