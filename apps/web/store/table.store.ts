@@ -21,6 +21,18 @@ export const useTableStore = defineStore('tableStore', () => {
 
   const curentMove = ref(Move.X);
 
+  const isCurentMoveComputer = computed(() => {
+    if (curentMove.value === Move.X) {
+      return xPlayer.value === Player.Computer
+    }
+
+    if (curentMove.value === Move.O) {
+      return oPlayer.value === Player.Computer
+    }
+
+    return false
+  })
+
   const generateEmptyTable = (m: number, n: number) => {
     table.value = []
 
@@ -75,16 +87,8 @@ export const useTableStore = defineStore('tableStore', () => {
   }
 
   const preNextMove = async () => {
-    if (curentMove.value === Move.O) {
-      if (oPlayer.value === Player.Computer) {
-        await makeComputerMove();
-      }
-    }
-
-    if (curentMove.value === Move.X) {
-      if (xPlayer.value === Player.Computer) {
-        await makeComputerMove();
-      }
+    if (isCurentMoveComputer.value) {
+      await makeComputerMove();
     }
     
     checkIfBoardIsFull();
@@ -93,7 +97,6 @@ export const useTableStore = defineStore('tableStore', () => {
   }
 
   const makeComputerMove = async () => {
-    console.log("Computer move");
     await checkWin();
 
     if (isGameEnd.value) {
@@ -126,7 +129,7 @@ export const useTableStore = defineStore('tableStore', () => {
     checkIfBoardIsFull();
     checkWin();
 
-    if (isGameEnd.value) {
+    if (isGameEnd.value || isCurentMoveComputer.value) {
       return
     }
 
