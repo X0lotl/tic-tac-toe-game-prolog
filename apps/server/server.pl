@@ -16,7 +16,7 @@
 server(Port) :-
   http_server(http_dispatch, [port(Port)]).
 
-destruct_make_move_dict(_{table: Board, m: M, n: N, player: PlayerRaw, winLength: WinLength}, Board, M, N, Player, WinLength) :-
+destruct_make_move_dict(_{table: Board, m: M, n: N, player: PlayerRaw, winLength: WinLength, maxDepth: MaxDepth}, Board, M, N, Player, WinLength, MaxDepth) :-
   atom_string(Player, PlayerRaw), !.
 
 handle_make_move(Request) :-
@@ -26,9 +26,9 @@ handle_make_move(Request) :-
 
 handle_make_move(Request) :-
   http_read_json_dict(Request, Input),
-  destruct_make_move_dict(Input, Board, M, N, Player, WinLength),
+  destruct_make_move_dict(Input, Board, M, N, Player, WinLength, MaxDepth),
   string_chars(Board, DestructedBoard),
-  minimax(DestructedBoard, M, N, Player, WinLength, BestMove),
+  minimax(DestructedBoard, M, N, Player, WinLength, MaxDepth, BestMove),
   string_chars(SerializedBestMove, BestMove),
   Res = _{
     bestMove: SerializedBestMove

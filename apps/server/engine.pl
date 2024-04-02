@@ -55,27 +55,33 @@ current_player(min, 'O', 'X').
 current_player(max, 'O', 'O').
 
 
-% best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, -BestMove, -BestValue)
+% best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, +MaxDepth, -BestMove, -BestValue)
 % Chooses the next move.
-best_move(max, [], _, _, _, _, [], -2).
-best_move(min, [], _, _, _, _, [], 2).
+best_move(max, [], _, _, _, _, _, [], -2).
+best_move(min, [], _, _, _, _, _, [], 2).
 
-best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestValue) :-
+best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, MaxDepth, BestMove, BestValue) :-
   eval_board(Move, M, N, Player, WinLength, Value),
-  best_move(MinMax, RestMoves, M, N, Player, WinLength, CurrentBestM, CurrentBestV),
+  best_move(MinMax, RestMoves, M, N, Player, WinLength, MaxDepth, CurrentBestM, CurrentBestV),
 	compare_moves(MinMax, Move, Value, CurrentBestM, CurrentBestV, BestMove, BestValue).
 
-best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestValue) :-
-	best_move(MinMax, RestMoves, M, N, Player, WinLength, CurrentBestM, CurrentBestV),
+best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, MaxDepth, BestMove, BestValue) :-
+	best_move(MinMax, RestMoves, M, N, Player, WinLength, MaxDepth, CurrentBestM, CurrentBestV),
 	change_max_min(MinMax, Other),
-  % opposite_side(Player, OppositePlayer),
-	minimax_step(Other, Move, M, N, Player, WinLength, _, BottomBestV),
+	minimax_step(Other, Move, M, N, Player, WinLength, MaxDepth, _, BottomBestV),
 	compare_moves(MinMax, Move, BottomBestV, CurrentBestM, CurrentBestV, BestMove, BestValue).
 
-minimax_step(MinMax, Board, M, N, Player, WinLength, BestMove, BestValue) :-
+minimax_step(MinMax, _, M, N, Player, WinLength, 0, BestMove, BestValue) :-
+  best_move(MinMax, [], M, N, Player, WinLength, 0, BestMove, BestValue).
+  % current_player(MinMax, Player, CurrentPlayer),
+  % all_possible_moves(CurrentPlayer, Board, AllMoves),
+  % best_move(MinMax, AllMoves, M, N, Player, WinLength, BestMove, BestValue), !.
+
+minimax_step(MinMax, Board, M, N, Player, WinLength, MaxDepth, BestMove, BestValue) :-
   current_player(MinMax, Player, CurrentPlayer),
   all_possible_moves(CurrentPlayer, Board, AllMoves),
-  best_move(MinMax, AllMoves, M, N, Player, WinLength, BestMove, BestValue), !.
+  NextMaxDepth is MaxDepth - 1,
+  best_move(MinMax, AllMoves, M, N, Player, WinLength, NextMaxDepth, BestMove, BestValue), !.
 
-minimax(Board, M, N, Player, WinLength, BestMove) :-
-  minimax_step(max, Board, M, N, Player, WinLength, BestMove, _).
+minimax(Board, M, N, Player, WinLength, MaxDepth, BestMove) :-
+  minimax_step(max, Board, M, N, Player, WinLength, MaxDepth, BestMove, _).
