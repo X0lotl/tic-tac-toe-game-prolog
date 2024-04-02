@@ -49,10 +49,16 @@ compare_moves(min, MoveA, ValueA, _, ValueB, MoveA, ValueA) :-
 compare_moves(min, _, ValueA, MoveB, ValueB, MoveB, ValueB) :-
 	ValueA > ValueB.
 
+current_player(min, 'X', 'O').
+current_player(max, 'X', 'X').
+current_player(min, 'O', 'X').
+current_player(max, 'O', 'O').
+
+
 % best_move(+MinMax, +AllMoves, +M, +N, +Player, +WinLength, -BestMove, -BestValue)
 % Chooses the next move.
-best_move(max, [], _, _, _, _, [], -2).
-best_move(min, [], _, _, _, _, [], 2).
+best_move(max, [], _, _, _, _, [], 0).
+best_move(min, [], _, _, _, _, [], 0).
 
 best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestValue) :-
   eval_board(Move, M, N, Player, WinLength, Value),
@@ -62,12 +68,13 @@ best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestVal
 best_move(MinMax, [Move | RestMoves], M, N, Player, WinLength, BestMove, BestValue) :-
 	best_move(MinMax, RestMoves, M, N, Player, WinLength, CurrentBestM, CurrentBestV),
 	change_max_min(MinMax, Other),
-  opposite_side(Player, OppositePlayer),
-	minimax_step(Other, Move, M, N, OppositePlayer, WinLength, _, BottomBestV),
+  % opposite_side(Player, OppositePlayer),
+	minimax_step(Other, Move, M, N, Player, WinLength, _, BottomBestV),
 	compare_moves(MinMax, Move, BottomBestV, CurrentBestM, CurrentBestV, BestMove, BestValue).
 
 minimax_step(MinMax, Board, M, N, Player, WinLength, BestMove, BestValue) :-
-  all_possible_moves(Player, Board, AllMoves),
+  current_player(MinMax, Player, CurrentPlayer),
+  all_possible_moves(CurrentPlayer, Board, AllMoves),
   best_move(MinMax, AllMoves, M, N, Player, WinLength, BestMove, BestValue), !.
 
 minimax(Board, M, N, Player, WinLength, BestMove) :-

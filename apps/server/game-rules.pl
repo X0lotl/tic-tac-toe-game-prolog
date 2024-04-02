@@ -87,8 +87,7 @@ is_winning_primary_diagonal_starting_at(Player, N, X, Skip, [_|Rest], WinLength)
   is_winning_primary_diagonal_starting_at(Player, N, NextX, NextSkip, Rest, WinLength), !.
 
 is_winning_primary_diagonal_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
-  X is Skip mod N,
-  is_winning_primary_diagonal_starting_at(Player, N, X, Skip, Board, WinLength), !.
+  is_winning_primary_diagonal_starting_at(Player, N, 0, Skip, Board, WinLength), !.
 
 is_winning_primary_diagonal_recursive_helper(Player, N, M, Skip, Board, WinLength) :-
   NextSkip is Skip + 1,
@@ -106,7 +105,7 @@ is_winning_secondary_diagonal_starting_at(Player, _, _, 0, [Player|_], 1).
 is_winning_secondary_diagonal_starting_at(Player, N, X, 0, [Player|RestBoard], WinLength) :-
   NextWinLength is WinLength - 1,
   NextSkip is N - 2,
-  % X =\= 0,
+  X =\= 0,
   next_x(N, X, NextX),
   is_winning_secondary_diagonal_starting_at(Player, N, NextX, NextSkip, RestBoard, NextWinLength),
   !.
@@ -119,8 +118,7 @@ is_winning_secondary_diagonal_starting_at(Player, N, X, Skip, [_|Rest], WinLengt
   !.
 
 is_winning_secondary_diagonal_recursive_helper(Player, N, _, Skip, Board, WinLength) :-
-  X is Skip mod N,
-  is_winning_secondary_diagonal_starting_at(Player, N, X, Skip, Board, WinLength), 
+  is_winning_secondary_diagonal_starting_at(Player, N, 0, Skip, Board, WinLength), 
   !.
 
 is_winning_secondary_diagonal_recursive_helper(Player, N, M, Skip, Board, WinLength) :-
