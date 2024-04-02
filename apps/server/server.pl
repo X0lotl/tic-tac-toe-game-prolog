@@ -6,6 +6,7 @@
 
 :- use_module(library(http/json_convert)).
 :- use_module(library(http/http_json)).
+:- use_module(library(http/http_cors)).
 
 :- http_handler(root(make_move), handle_make_move, []).		
 :- http_handler(root(is_win), handle_is_win, []).		
@@ -17,6 +18,7 @@ destruct_make_move_dict(_{table: Board, m: M, n: N, player: PlayerRaw, winLength
   atom_string(Player, PlayerRaw), !.
 
 handle_make_move(Request) :-
+  cors_enable,
   http_read_json_dict(Request, Input),
   destruct_make_move_dict(Input, Board, M, N, Player, WinLength),
   string_chars(Board, DestructedBoard),
@@ -38,6 +40,7 @@ get_winner(Board, M, N, WinLength, 'O') :-
 get_winner(_, _, _, _, 'E').
 
 handle_is_win(Request) :-
+  cors_enable,
   http_read_json_dict(Request, Input),
   destruct_is_win_dict(Input, Board, M, N, WinLength),
   string_chars(Board, DestructedBoard),
