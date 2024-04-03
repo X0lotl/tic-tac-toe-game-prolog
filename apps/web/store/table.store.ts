@@ -91,7 +91,7 @@ export const useTableStore = defineStore('tableStore', () => {
     if (isCurentMoveComputer.value) {
       await makeComputerMove();
     }
-    
+
     checkIfBoardIsFull();
     await checkWin();
 
@@ -121,7 +121,12 @@ export const useTableStore = defineStore('tableStore', () => {
 
     const data = await response.json()
 
-    table.value = data.bestMove.split("")
+    if (data.bestMove === "") {
+      table.value = (table.value.join("").replace("E", curentMove.value)).split("") as Cell[]
+    } else {
+      table.value = data.bestMove.split("")
+    }
+
 
     changeCurrentMove()
     await preNextMove()
@@ -153,14 +158,14 @@ export const useTableStore = defineStore('tableStore', () => {
     checkIfBoardIsFull();
     await checkWin();
 
-    if(isGameEnd.value) {
+    if (isGameEnd.value) {
       return
     }
 
     await preNextMove();
   }
 
-  const resetTable =  async () => {
+  const resetTable = async () => {
     table.value = table.value.map(() => "E")
 
     isWin.value = "E"
@@ -180,6 +185,10 @@ export const useTableStore = defineStore('tableStore', () => {
     oPlayer.value = o
 
     await preNextMove()
+
+    if (xPlayer.value === Player.Computer) {
+      // await makeComputerMove()
+    }
   }
 
   return { table, meta, generateEmptyTable, resetTable, isWin, checkWin, makeMove, isGameEnd, curentMove, startGame }
