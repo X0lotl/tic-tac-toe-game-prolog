@@ -28,7 +28,7 @@ add_columns_separator([BoardHead|BoardTail], CurrentN, N, BoardWithSeparators) :
 is_winning_line(Player, N, Board, WinLength) :-
   WinLength =< N,
   add_columns_separator(Board, 0, N, BoardWithSeparators),
-  create_list_n(Player, N, RepeatedList),
+  create_list_n(Player, WinLength, RepeatedList),
   append(_, T, BoardWithSeparators),
   append(RepeatedList, _, T),
   !.
